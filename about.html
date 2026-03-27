@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - Trade Profit Calculator</title>
+  <meta name="description" content="About the Trade Profit Calculator website." />
+  <style>
+:root{
+  --bg:#0a0f18;
+  --panel:#111826;
+  --panel-2:#182235;
+  --panel-3:#0e1522;
+  --border:#273247;
+  --text:#edf2fb;
+  --muted:#9aabc4;
+  --accent:#63b3ff;
+  --accent-2:#3b82f6;
+  --green:#22c55e;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --shadow:0 14px 40px rgba(0,0,0,.28);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.12), transparent 30%),
+    radial-gradient(circle at top right, rgba(99,179,255,.08), transparent 25%),
+    var(--bg);
+  color:var(--text);
+  line-height:1.55;
+}
+.wrap{width:min(1220px,94%);margin:26px auto 52px}
+a{color:#9cc4ff}
+.nav{
+  display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  margin-bottom:18px;padding:14px 16px;background:rgba(17,24,38,.88);border:1px solid var(--border);
+  border-radius:16px;box-shadow:var(--shadow)
+}
+.nav .links{display:flex;gap:10px;flex-wrap:wrap}
+.nav a{
+  text-decoration:none;border:1px solid var(--border);padding:8px 12px;border-radius:999px;
+  color:var(--muted);background:rgba(255,255,255,.02);font-size:13px;font-weight:700
+}
+.brand{font-weight:900;font-size:18px;color:var(--text)}
+.hero{
+  display:flex;justify-content:space-between;gap:18px;align-items:flex-end;
+  margin-bottom:20px;flex-wrap:wrap
+}
+.hero h1{margin:0 0 8px;font-size:clamp(28px,4vw,42px)}
+.hero p{margin:0;color:var(--muted);max-width:900px}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{
+  border:1px solid var(--border);
+  color:var(--muted);
+  background:rgba(255,255,255,.02);
+  padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700
+}
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+.panel{
+  background:linear-gradient(180deg, rgba(17,24,38,.95), rgba(12,19,31,.98));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.section{
+  padding:18px;
+  border-bottom:1px solid rgba(39,50,71,.7);
+}
+.section:last-child{border-bottom:none}
+.section h2{margin:0 0 14px;font-size:19px}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap
+}
+.section-head p{margin:0;color:var(--muted);font-size:13px}
+.grid-2,.grid-3,.grid-4{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.full{grid-column:1/-1}
+.field label{
+  display:block;font-size:12px;font-weight:800;color:var(--muted);
+  margin:0 0 7px;letter-spacing:.25px;text-transform:uppercase
+}
+.field input,.field select,.field textarea{
+  width:100%;padding:12px 13px;border-radius:14px;border:1px solid var(--border);
+  background:var(--panel-2);color:var(--text);font-size:15px;outline:none
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--accent-2);
+  box-shadow:0 0 0 3px rgba(59,130,246,.18)
+}
+.field .hint{margin-top:6px;font-size:12px;color:var(--muted)}
+.segmented{display:grid;gap:10px}
+.segmented.two{grid-template-columns:repeat(2,1fr)}
+.segmented.three{grid-template-columns:repeat(3,1fr)}
+.segmented.four{grid-template-columns:repeat(4,1fr)}
+.segmented button{
+  width:100%;padding:12px 10px;border-radius:14px;border:1px solid var(--border);
+  background:var(--panel-2);color:var(--text);font-weight:800;cursor:pointer
+}
+.segmented button.active{
+  background:linear-gradient(180deg, rgba(99,179,255,.22), rgba(59,130,246,.18));
+  border-color:#4d7fd7;color:#fff
+}
+.toolbar{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px}
+.toolbar button{
+  padding:14px 14px;border:none;border-radius:15px;cursor:pointer;font-size:15px;font-weight:900
+}
+.primary{background:linear-gradient(180deg,#6ec1ff,#3d8eff);color:#07101c}
+.secondary{background:#19263c;color:#dce6f7;border:1px solid var(--border)}
+.danger{background:#1a202d;color:#ffdee0;border:1px solid #48323b}
+.message{margin-top:14px;padding:12px 14px;border-radius:14px;font-size:14px}
+.message.error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.34);color:#fecaca}
+.message.success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.34);color:#bbf7d0}
+.hidden{display:none !important}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{
+  background:linear-gradient(180deg,#121d2f,#0f1828);
+  border:1px solid var(--border);border-radius:16px;padding:14px
+}
+.stat .k{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.25px;margin-bottom:8px}
+.stat .v{font-size:24px;font-weight:900;word-break:break-word}
+.positive{color:var(--green)}
+.negative{color:var(--red)}
+.neutral{color:var(--text)}
+.warning{color:var(--amber)}
+.mini-note{
+  margin-top:12px;padding:12px;border-radius:14px;background:#0f1624;border:1px solid var(--border);
+  color:var(--muted);font-size:13px
+}
+.table-wrap{
+  overflow:auto;border:1px solid var(--border);border-radius:16px;background:var(--panel-3)
+}
+table{width:100%;min-width:720px;border-collapse:collapse}
+th,td{padding:11px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+th{position:sticky;top:0;background:#0c1320;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+.subtle{color:var(--muted);font-size:13px}
+.partial-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.aside-sticky{position:sticky;top:16px}
+.support-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.support-box{
+  background:#0f1624;border:1px solid var(--border);border-radius:16px;padding:14px
+}
+.support-box h3{margin:0 0 10px;font-size:16px}
+.support-box a{color:#9cc4ff;text-decoration:none;word-break:break-all}
+.support-box code{
+  display:block;background:#0a1220;border:1px solid var(--border);padding:10px;border-radius:12px;
+  color:#dce9ff;word-break:break-all
+}
+.content-panel{
+  margin-top:18px;
+  background:linear-gradient(180deg, rgba(17,24,38,.95), rgba(12,19,31,.98));
+  border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden
+}
+.content-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:18px;padding:18px
+}
+.article{
+  background:#0f1624;border:1px solid var(--border);border-radius:16px;padding:16px
+}
+.article h3{margin:0 0 10px}
+.ad-inline{
+  margin:18px;border:1px dashed var(--border);border-radius:16px;padding:18px;text-align:center;color:var(--muted);min-height:110px;
+  display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.02)
+}
+.legal-wrap{max-width:980px;margin:26px auto}
+.legal-card{
+  background:linear-gradient(180deg, rgba(17,24,38,.95), rgba(12,19,31,.98));
+  border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:22px
+}
+.legal-card h1{margin-top:0}
+.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
+@media (max-width:1020px){
+  .layout{grid-template-columns:1fr}
+  .aside-sticky{position:static}
+}
+@media (max-width:760px){
+  .grid-2,.grid-3,.grid-4,.stats,.toolbar,.segmented.two,.segmented.three,.segmented.four,.partial-row,.content-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+  <div class="wrap legal-wrap">
+    <div class="nav">
+      <div class="brand">Trade Profit Calculator</div>
+      <div class="links">
+        <a href="index.html">Calculator</a>
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="disclaimer.html">Disclaimer</a>
+      </div>
+    </div>
+    <div class="legal-card">
+      
+<h1>About Trade Profit Calculator</h1>
+<p>Trade Profit Calculator is a simple web-based calculator designed to help traders estimate profit, costs, break-even price, and ROI for Spot and Futures positions.</p>
+<p>The goal of this tool is to make trade cost calculation easier and clearer. Instead of manually estimating entry fees, exit fees, funding, and other expenses, users can input their own trade numbers and see a structured result instantly.</p>
+<h2>Who this tool is for</h2>
+<p>This tool is useful for traders who want a clean calculator for profit and cost estimation without account creation, exchange connection, live price feeds, or trade tracking.</p>
+<h2>What the calculator covers</h2>
+<ul>
+  <li>Spot buy-to-sell calculations</li>
+  <li>Futures long and short calculations</li>
+  <li>Manual fee and cost input</li>
+  <li>Break-even estimation</li>
+  <li>Multi-target comparison</li>
+  <li>Optional partial exit calculations</li>
+</ul>
+<h2>Important note</h2>
+<p>This website is a calculation tool only. It is not financial advice, trading advice, or an execution platform.</p>
+
+    </div>
+    <div class="footer">Trade Profit Calculator</div>
+  </div>
+</body>
+</html>
