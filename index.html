@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Profit Calculator</title>
+  <!-- Google AdSense Auto Ads:
+       After approval, paste your AdSense script directly below this comment.
+       Example:
+       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX"
+         crossorigin="anonymous"></script>
+  -->
+  <style>
+    :root{
+      --bg:#0a0f18;
+      --panel:#111826;
+      --panel-2:#182235;
+      --panel-3:#0e1522;
+      --border:#273247;
+      --text:#edf2fb;
+      --muted:#9aabc4;
+      --accent:#63b3ff;
+      --accent-2:#3b82f6;
+      --green:#22c55e;
+      --red:#ef4444;
+      --amber:#f59e0b;
+      --shadow:0 14px 40px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(99,179,255,.08), transparent 25%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .wrap{width:min(1220px,94%);margin:26px auto 52px}
+    .hero{
+      display:flex;justify-content:space-between;gap:18px;align-items:flex-end;
+      margin-bottom:20px;flex-wrap:wrap
+    }
+    .hero h1{margin:0 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:.2px}
+    .hero p{margin:0;color:var(--muted);max-width:860px}
+    .hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{
+      border:1px solid var(--border);
+      color:var(--muted);
+      background:rgba(255,255,255,.02);
+      padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700
+    }
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    .panel{
+      background:linear-gradient(180deg, rgba(17,24,38,.95), rgba(12,19,31,.98));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .section{
+      padding:18px;
+      border-bottom:1px solid rgba(39,50,71,.7);
+    }
+    .section:last-child{border-bottom:none}
+    .section h2{
+      margin:0 0 14px;font-size:19px
+    }
+    .section-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap
+    }
+    .section-head p{margin:0;color:var(--muted);font-size:13px}
+    .grid-2,.grid-3,.grid-4{
+      display:grid;gap:14px
+    }
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .full{grid-column:1/-1}
+    .field label{
+      display:block;font-size:12px;font-weight:800;color:var(--muted);
+      margin:0 0 7px;letter-spacing:.25px;text-transform:uppercase
+    }
+    .field input,.field select,.field textarea{
+      width:100%;padding:12px 13px;border-radius:14px;border:1px solid var(--border);
+      background:var(--panel-2);color:var(--text);font-size:15px;outline:none
+    }
+    .field input:focus,.field select:focus,.field textarea:focus{
+      border-color:var(--accent-2);
+      box-shadow:0 0 0 3px rgba(59,130,246,.18)
+    }
+    .field .hint{margin-top:6px;font-size:12px;color:var(--muted)}
+    .tabs{
+      display:grid;gap:10px
+    }
+    .segmented{
+      display:grid;gap:10px
+    }
+    .segmented.two{grid-template-columns:repeat(2,1fr)}
+    .segmented.three{grid-template-columns:repeat(3,1fr)}
+    .segmented.four{grid-template-columns:repeat(4,1fr)}
+    .segmented button{
+      width:100%;padding:12px 10px;border-radius:14px;border:1px solid var(--border);
+      background:var(--panel-2);color:var(--text);font-weight:800;cursor:pointer
+    }
+    .segmented button.active{
+      background:linear-gradient(180deg, rgba(99,179,255,.22), rgba(59,130,246,.18));
+      border-color:#4d7fd7;
+      color:#fff
+    }
+    .toolbar{
+      display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px
+    }
+    .toolbar button{
+      padding:14px 14px;border:none;border-radius:15px;cursor:pointer;font-size:15px;font-weight:900
+    }
+    .primary{background:linear-gradient(180deg,#6ec1ff,#3d8eff);color:#07101c}
+    .secondary{background:#19263c;color:#dce6f7;border:1px solid var(--border)}
+    .danger{background:#1a202d;color:#ffdee0;border:1px solid #48323b}
+    .message{
+      margin-top:14px;padding:12px 14px;border-radius:14px;font-size:14px
+    }
+    .message.error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.34);color:#fecaca}
+    .message.success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.34);color:#bbf7d0}
+    .hidden{display:none !important}
+    .stats{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:12px
+    }
+    .stat{
+      background:linear-gradient(180deg,#121d2f,#0f1828);
+      border:1px solid var(--border);border-radius:16px;padding:14px
+    }
+    .stat .k{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.25px;margin-bottom:8px}
+    .stat .v{font-size:24px;font-weight:900;word-break:break-word}
+    .positive{color:var(--green)}
+    .negative{color:var(--red)}
+    .neutral{color:var(--text)}
+    .warning{color:var(--amber)}
+    .mini-note{
+      margin-top:12px;padding:12px;border-radius:14px;background:#0f1624;border:1px solid var(--border);
+      color:var(--muted);font-size:13px
+    }
+    .table-wrap{
+      overflow:auto;border:1px solid var(--border);border-radius:16px;background:var(--panel-3)
+    }
+    table{width:100%;min-width:720px;border-collapse:collapse}
+    th,td{padding:11px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+    th{position:sticky;top:0;background:#0c1320;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+    .subtle{
+      color:var(--muted);font-size:13px
+    }
+    details{
+      background:#0f1624;border:1px solid var(--border);border-radius:14px;padding:12px 14px
+    }
+    summary{cursor:pointer;font-weight:800}
+    .partial-row{
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px
+    }
+    .aside-sticky{position:sticky;top:16px}
+    .support-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .support-box{
+      background:#0f1624;border:1px solid var(--border);border-radius:16px;padding:14px
+    }
+    .support-box h3{margin:0 0 10px;font-size:16px}
+    .support-box a{color:#9cc4ff;text-decoration:none;word-break:break-all}
+    .support-box code{
+      display:block;background:#0a1220;border:1px solid var(--border);padding:10px;border-radius:12px;
+      color:#dce9ff;word-break:break-all
+    }
+    .ad-box{
+      min-height:130px;border:2px dashed var(--border);border-radius:16px;
+      display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);
+      background:rgba(255,255,255,.02);padding:16px
+    }
+    .footer{
+      margin-top:10px;text-align:center;color:var(--muted);font-size:12px
+    }
+    @media (max-width:1020px){
+      .layout{grid-template-columns:1fr}
+      .aside-sticky{position:static}
+    }
+    @media (max-width:760px){
+      .grid-2,.grid-3,.grid-4,.stats,.toolbar,.segmented.two,.segmented.three,.segmented.four,.partial-row{
+        grid-template-columns:1fr
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Trade Profit Calculator</h1>
+        <p>A cleaner execution-focused calculator for Spot and Futures. It handles profit, fees, break-even, multi-targets, and partial exits without market analysis or tracking.</p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge">Spot: Buy → Sell</span>
+        <span class="badge">Futures: Long / Short</span>
+        <span class="badge">Fees + Funding + Extra Costs</span>
+        <span class="badge">Single-file HTML</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="section">
+          <div class="section-head">
+            <h2>1) Trade Setup</h2>
+            <p>Choose market, side, size input, and calculation mode.</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Market</label>
+              <div id="marketButtons" class="segmented two">
+                <button type="button" data-market="spot">Spot</button>
+                <button type="button" data-market="futures">Futures</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Trade Side</label>
+              <div id="sideButtons" class="segmented two"></div>
+            </div>
+
+            <div class="field">
+              <label>Position Input</label>
+              <div id="inputButtons" class="segmented"></div>
+            </div>
+
+            <div class="field">
+              <label>Calculation Mode</label>
+              <div id="modeButtons" class="segmented four">
+                <button type="button" data-mode="exitPrice">Exit Price</button>
+                <button type="button" data-mode="targetPercent">Target %</button>
+                <button type="button" data-mode="targetAmount">Target Amount</button>
+                <button type="button" data-mode="multiTargets">Multi Targets</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>2) Prices & Position Size</h2>
+            <p>Only the relevant inputs stay visible.</p>
+          </div>
+
+          <div class="grid-3">
+            <div class="field">
+              <label id="entryPriceLabel">Buy / Entry Price</label>
+              <input id="entryPrice" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field" id="exitPriceWrap">
+              <label id="exitPriceLabel">Sell / Exit Price</label>
+              <input id="exitPrice" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field">
+              <label>Quote Currency</label>
+              <input id="quoteCurrency" type="text" value="USDT" />
+            </div>
+
+            <div class="field hidden" id="targetPercentWrap">
+              <label>Target Profit %</label>
+              <input id="targetPercent" type="number" step="any" />
+            </div>
+
+            <div class="field hidden" id="targetAmountWrap">
+              <label>Target Profit Amount</label>
+              <input id="targetAmount" type="number" step="any" />
+            </div>
+
+            <div class="field hidden" id="multiTypeWrap">
+              <label>Multi Target Type</label>
+              <select id="multiType">
+                <option value="percent">Percent</option>
+                <option value="amount">Amount</option>
+                <option value="price">Price</option>
+              </select>
+            </div>
+
+            <div class="field full hidden" id="multiListWrap">
+              <label>Multi Targets</label>
+              <input id="multiList" type="text" placeholder="Example: 1,2,3 or 10,20,50 or 71000,72000,73500" />
+              <div class="hint">Enter values separated by commas.</div>
+            </div>
+
+            <div class="field" id="amountWrap">
+              <label>Amount</label>
+              <input id="amountInput" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field hidden" id="quantityWrap">
+              <label>Quantity</label>
+              <input id="quantityInput" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field hidden" id="marginWrap">
+              <label>Margin</label>
+              <input id="marginInput" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field hidden" id="leverageWrap">
+              <label>Leverage</label>
+              <input id="leverageInput" type="number" step="any" min="0" />
+            </div>
+
+            <div class="field hidden" id="positionSizeWrap">
+              <label>Position Size</label>
+              <input id="positionSizeInput" type="number" step="any" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>3) Fees & Costs</h2>
+            <p>Use a preset or enter everything manually.</p>
+          </div>
+
+          <div class="grid-4">
+            <div class="field">
+              <label>Fee Preset</label>
+              <select id="feePreset">
+                <option value="manual">Manual Custom</option>
+                <option value="binanceSpot">Binance Spot</option>
+                <option value="binanceFutures">Binance Futures</option>
+                <option value="bybitSpot">Bybit Spot</option>
+                <option value="bybitFutures">Bybit Futures</option>
+                <option value="okxSpot">OKX Spot</option>
+                <option value="okxFutures">OKX Futures</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label id="entryFeeModeLabel">Buy / Open Fee Mode</label>
+              <select id="entryFeeMode">
+                <option value="percent">Percent</option>
+                <option value="fixed">Fixed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label id="entryFeeValueLabel">Buy / Open Fee Value</label>
+              <input id="entryFeeValue" type="number" step="any" min="0" value="0.1" />
+            </div>
+
+            <div class="field">
+              <label id="exitFeeModeLabel">Sell / Close Fee Mode</label>
+              <select id="exitFeeMode">
+                <option value="percent">Percent</option>
+                <option value="fixed">Fixed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label id="exitFeeValueLabel">Sell / Close Fee Value</label>
+              <input id="exitFeeValue" type="number" step="any" min="0" value="0.1" />
+            </div>
+
+            <div class="field hidden" id="fundingWrap">
+              <label>Funding Cost</label>
+              <input id="fundingCost" type="number" step="any" min="0" value="0" />
+            </div>
+
+            <div class="field">
+              <label>Additional Costs</label>
+              <input id="additionalCosts" type="number" step="any" min="0" value="0" />
+            </div>
+          </div>
+
+          <div class="mini-note">
+            Presets are convenience defaults. They are editable and should not replace checking your own fee settings.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>4) Optional Partial Exit</h2>
+            <p>Use this only if you want to split the position across multiple exits.</p>
+          </div>
+
+          <label class="inline" style="margin-bottom:10px">
+            <input id="enablePartialExit" type="checkbox" />
+            Enable Partial Exit
+          </label>
+
+          <div id="partialSection" class="hidden">
+            <div class="partial-row subtle">
+              <div>Exit Portion %</div>
+              <div>Target Type</div>
+              <div>Target Value</div>
+            </div>
+
+            <div class="partial-row">
+              <div class="field"><input class="partial-portion" type="number" step="any" min="0" placeholder="25" /></div>
+              <div class="field">
+                <select class="partial-type">
+                  <option value="percent">Percent</option>
+                  <option value="amount">Amount</option>
+                  <option value="price">Price</option>
+                </select>
+              </div>
+              <div class="field"><input class="partial-value" type="number" step="any" min="0" placeholder="1" /></div>
+            </div>
+
+            <div class="partial-row">
+              <div class="field"><input class="partial-portion" type="number" step="any" min="0" placeholder="25" /></div>
+              <div class="field">
+                <select class="partial-type">
+                  <option value="percent">Percent</option>
+                  <option value="amount">Amount</option>
+                  <option value="price">Price</option>
+                </select>
+              </div>
+              <div class="field"><input class="partial-value" type="number" step="any" min="0" placeholder="2" /></div>
+            </div>
+
+            <div class="partial-row">
+              <div class="field"><input class="partial-portion" type="number" step="any" min="0" placeholder="50" /></div>
+              <div class="field">
+                <select class="partial-type">
+                  <option value="percent">Percent</option>
+                  <option value="amount">Amount</option>
+                  <option value="price">Price</option>
+                </select>
+              </div>
+              <div class="field"><input class="partial-value" type="number" step="any" min="0" placeholder="3" /></div>
+            </div>
+
+            <div class="mini-note">Partial exit portions must total exactly 100%.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="toolbar">
+            <button id="calculateBtn" class="primary" type="button">Calculate</button>
+            <button id="copyBtn" class="secondary" type="button">Copy Result</button>
+            <button id="resetBtn" class="danger" type="button">Reset</button>
+          </div>
+          <div id="messageWrap" class="hidden"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>How to Use This Calculator</h2>
+            <p>Quick steps, placed under the working area.</p>
+          </div>
+          <div class="mini-note">
+            1. Choose your market type: Spot or Futures.<br>
+            2. Select the correct trade side.<br>
+            3. Enter your position using the method that matches your trade.<br>
+            4. Add your fees and any extra costs.<br>
+            5. Calculate by exit price, target %, target amount, or multi targets.<br>
+            6. Review net profit, total costs, break-even, and ROI before making a decision.
+          </div>
+          <div class="mini-note" style="margin-top:12px">
+            This tool is for calculation only. It does not connect to exchanges, fetch live prices, or give market advice.
+          </div>
+        </div>
+      </div>
+
+      <div class="aside-sticky">
+        <div class="panel">
+          <div class="section">
+            <div class="section-head">
+              <h2>Summary</h2>
+              <p>Main outputs only.</p>
+            </div>
+            <div id="summaryGrid" class="stats">
+              <div class="stat"><div class="k">Status</div><div class="v neutral">No calculation yet</div></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-head">
+              <h2>Detailed Calculation</h2>
+              <p>Full breakdown.</p>
+            </div>
+            <div id="detailsWrap" class="table-wrap"><div class="mini-note">No detailed calculation yet.</div></div>
+          </div>
+
+          <div class="section">
+            <div class="section-head">
+              <h2>Multi Targets</h2>
+              <p>Comparison table.</p>
+            </div>
+            <div id="multiWrap" class="table-wrap"><div class="mini-note">No multi-target results yet.</div></div>
+          </div>
+
+          <div class="section">
+            <div class="section-head">
+              <h2>Partial Exit Results</h2>
+              <p>Only if enabled.</p>
+            </div>
+            <div id="partialWrap" class="table-wrap"><div class="mini-note">Partial exit is disabled.</div></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+
+          <div class="section">
+            <h2>Links & Support</h2>
+            <div class="support-grid">
+              <div class="support-box">
+                <h3>Recommended Exchange Links</h3>
+                <p><a href="https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_ZXPRN&utm_source=default" target="_blank" rel="noopener noreferrer">Binance referral link</a></p>
+                <p><a href="https://www.bybit.com/invite?ref=RQA90AB" target="_blank" rel="noopener noreferrer">Bybit referral link</a></p>
+              </div>
+
+              <div class="support-box">
+                <h3>Support the Project</h3>
+                <p><a href="https://paypal.me/shehab6949" target="_blank" rel="noopener noreferrer">PayPal donation</a></p>
+                <p class="subtle">USDT (TRC20)</p>
+                <code id="walletAddress" title="USDT TRC20 wallet address">TDxzS7Snu5raRv1GzcDfY44xeAY2sD4j8v</code>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+                  <button type="button" id="copyWalletBtn" class="secondary" style="width:auto;padding:10px 14px">Copy Address</button>
+                  <a href="https://tronscan.org/#/address/TDxzS7Snu5raRv1GzcDfY44xeAY2sD4j8v" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:#19263c;color:#dce6f7;text-decoration:none;font-weight:800">Open in Explorer</a>
+                </div>
+                <p class="subtle">Send only <strong>USDT on the TRC20 network</strong>. Binance shows the minimum deposit requirement as above 0.01 USDT.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">Built for direct calculation, not market analysis.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const state = {
+      market:'spot',
+      side:'spotBuySell',
+      input:'amount',
+      mode:'exitPrice'
+    };
+
+    const presets = {
+      manual:null,
+      binanceSpot:{entryMode:'percent',entryValue:0.1,exitMode:'percent',exitValue:0.1},
+      binanceFutures:{entryMode:'percent',entryValue:0.04,exitMode:'percent',exitValue:0.04},
+      bybitSpot:{entryMode:'percent',entryValue:0.1,exitMode:'percent',exitValue:0.1},
+      bybitFutures:{entryMode:'percent',entryValue:0.055,exitMode:'percent',exitValue:0.055},
+      okxSpot:{entryMode:'percent',entryValue:0.1,exitMode:'percent',exitValue:0.1},
+      okxFutures:{entryMode:'percent',entryValue:0.05,exitMode:'percent',exitValue:0.05}
+    };
+
+    const $ = id => document.getElementById(id);
+
+    const els = {
+      marketButtons:$('marketButtons'),
+      sideButtons:$('sideButtons'),
+      inputButtons:$('inputButtons'),
+      modeButtons:$('modeButtons'),
+
+      entryPrice:$('entryPrice'),
+      exitPrice:$('exitPrice'),
+      quoteCurrency:$('quoteCurrency'),
+      targetPercent:$('targetPercent'),
+      targetAmount:$('targetAmount'),
+      multiType:$('multiType'),
+      multiList:$('multiList'),
+
+      amountInput:$('amountInput'),
+      quantityInput:$('quantityInput'),
+      marginInput:$('marginInput'),
+      leverageInput:$('leverageInput'),
+      positionSizeInput:$('positionSizeInput'),
+
+      feePreset:$('feePreset'),
+      entryFeeMode:$('entryFeeMode'),
+      entryFeeValue:$('entryFeeValue'),
+      exitFeeMode:$('exitFeeMode'),
+      exitFeeValue:$('exitFeeValue'),
+      fundingCost:$('fundingCost'),
+      additionalCosts:$('additionalCosts'),
+
+      entryPriceLabel:$('entryPriceLabel'),
+      exitPriceLabel:$('exitPriceLabel'),
+      entryFeeModeLabel:$('entryFeeModeLabel'),
+      entryFeeValueLabel:$('entryFeeValueLabel'),
+      exitFeeModeLabel:$('exitFeeModeLabel'),
+      exitFeeValueLabel:$('exitFeeValueLabel'),
+
+      exitPriceWrap:$('exitPriceWrap'),
+      targetPercentWrap:$('targetPercentWrap'),
+      targetAmountWrap:$('targetAmountWrap'),
+      multiTypeWrap:$('multiTypeWrap'),
+      multiListWrap:$('multiListWrap'),
+
+      amountWrap:$('amountWrap'),
+      quantityWrap:$('quantityWrap'),
+      marginWrap:$('marginWrap'),
+      leverageWrap:$('leverageWrap'),
+      positionSizeWrap:$('positionSizeWrap'),
+      fundingWrap:$('fundingWrap'),
+
+      enablePartialExit:$('enablePartialExit'),
+      partialSection:$('partialSection'),
+
+      calculateBtn:$('calculateBtn'),
+      copyBtn:$('copyBtn'),
+      resetBtn:$('resetBtn'),
+      messageWrap:$('messageWrap'),
+      summaryGrid:$('summaryGrid'),
+      detailsWrap:$('detailsWrap'),
+      multiWrap:$('multiWrap'),
+      partialWrap:$('partialWrap')
+    };
+
+    const partialPortions = () => [...document.querySelectorAll('.partial-portion')];
+    const partialTypes = () => [...document.querySelectorAll('.partial-type')];
+    const partialValues = () => [...document.querySelectorAll('.partial-value')];
+
+    function num(v){
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function fmt(v, d=8){
+      if(v === null || v === undefined || !Number.isFinite(v)) return '-';
+      return Number(v).toLocaleString(undefined,{maximumFractionDigits:d});
+    }
+
+    function setMessage(text='', type='error'){
+      if(!text){
+        els.messageWrap.className = 'hidden';
+        els.messageWrap.innerHTML = '';
+        return;
+      }
+      els.messageWrap.className = `message ${type}`;
+      els.messageWrap.innerHTML = text;
+    }
+
+    function renderSegment(container, items, current, key){
+      container.className = `segmented ${items.length === 2 ? 'two' : items.length === 3 ? 'three' : 'four'}`;
+      container.innerHTML = items.map(item => `
+        <button type="button" class="${current === item.value ? 'active' : ''}" data-key="${key}" data-value="${item.value}">
+          ${item.label}
+        </button>
+      `).join('');
+    }
+
+    function syncChoices(){
+      renderSegment(
+        els.marketButtons,
+        [{label:'Spot', value:'spot'},{label:'Futures', value:'futures'}],
+        state.market,'market'
+      );
+
+      const sideItems = state.market === 'spot'
+        ? [{label:'Buy → Sell', value:'spotBuySell'}]
+        : [{label:'Long', value:'long'},{label:'Short', value:'short'}];
+      if(!sideItems.find(x => x.value === state.side)) state.side = sideItems[0].value;
+      renderSegment(els.sideButtons, sideItems, state.side, 'side');
+
+      const inputItems = state.market === 'spot'
+        ? [{label:'Amount', value:'amount'},{label:'Quantity', value:'quantity'}]
+        : [{label:'Quantity', value:'quantity'},{label:'Margin + Leverage', value:'marginLeverage'},{label:'Position Size', value:'positionSize'}];
+      if(!inputItems.find(x => x.value === state.input)) state.input = inputItems[0].value;
+      renderSegment(els.inputButtons, inputItems, state.input, 'input');
+
+      renderSegment(
+        els.modeButtons,
+        [
+          {label:'Exit Price', value:'exitPrice'},
+          {label:'Target %', value:'targetPercent'},
+          {label:'Target Amount', value:'targetAmount'},
+          {label:'Multi Targets', value:'multiTargets'}
+        ],
+        state.mode, 'mode'
+      );
+    }
+
+    function updateLabels(){
+      if(state.market === 'spot'){
+        els.entryPriceLabel.textContent = 'Buy Price';
+        els.exitPriceLabel.textContent = 'Sell Price';
+        els.entryFeeModeLabel.textContent = 'Buy Fee Mode';
+        els.entryFeeValueLabel.textContent = 'Buy Fee Value';
+        els.exitFeeModeLabel.textContent = 'Sell Fee Mode';
+        els.exitFeeValueLabel.textContent = 'Sell Fee Value';
+      } else {
+        els.entryPriceLabel.textContent = 'Entry Price';
+        els.exitPriceLabel.textContent = 'Exit Price';
+        els.entryFeeModeLabel.textContent = 'Open Fee Mode';
+        els.entryFeeValueLabel.textContent = 'Open Fee Value';
+        els.exitFeeModeLabel.textContent = 'Close Fee Mode';
+        els.exitFeeValueLabel.textContent = 'Close Fee Value';
+      }
+    }
+
+    function toggle(el, show){
+      el.classList.toggle('hidden', !show);
+    }
+
+    function updateVisibility(){
+      syncChoices();
+      updateLabels();
+
+      toggle(els.exitPriceWrap, state.mode === 'exitPrice');
+      toggle(els.targetPercentWrap, state.mode === 'targetPercent');
+      toggle(els.targetAmountWrap, state.mode === 'targetAmount');
+      toggle(els.multiTypeWrap, state.mode === 'multiTargets');
+      toggle(els.multiListWrap, state.mode === 'multiTargets');
+
+      toggle(els.amountWrap, state.input === 'amount');
+      toggle(els.quantityWrap, state.input === 'quantity');
+      toggle(els.marginWrap, state.input === 'marginLeverage');
+      toggle(els.leverageWrap, state.input === 'marginLeverage');
+      toggle(els.positionSizeWrap, state.input === 'positionSize');
+
+      toggle(els.fundingWrap, state.market === 'futures');
+      toggle(els.partialSection, els.enablePartialExit.checked);
+    }
+
+    function applyPreset(){
+      const p = presets[els.feePreset.value];
+      if(!p) return;
+      els.entryFeeMode.value = p.entryMode;
+      els.entryFeeValue.value = p.entryValue;
+      els.exitFeeMode.value = p.exitMode;
+      els.exitFeeValue.value = p.exitValue;
+    }
+
+    function calcFee(mode, value, base){
+      return mode === 'percent' ? base * (value / 100) : value;
+    }
+
+    function getBase(){
+      const entryPrice = num(els.entryPrice.value);
+      if(entryPrice <= 0) throw new Error('Please enter a valid entry price.');
+      const quoteCurrency = (els.quoteCurrency.value || 'USDT').trim();
+
+      let quantity = 0;
+      let positionSize = 0;
+      let margin = 0;
+      let leverage = 0;
+
+      if(state.input === 'amount'){
+        const amount = num(els.amountInput.value);
+        if(amount <= 0) throw new Error('Please enter a valid amount.');
+        quantity = amount / entryPrice;
+        positionSize = amount;
+      } else if(state.input === 'quantity'){
+        quantity = num(els.quantityInput.value);
+        if(quantity <= 0) throw new Error('Please enter a valid quantity.');
+        positionSize = quantity * entryPrice;
+      } else if(state.input === 'marginLeverage'){
+        margin = num(els.marginInput.value);
+        leverage = num(els.leverageInput.value);
+        if(margin <= 0) throw new Error('Please enter a valid margin.');
+        if(leverage <= 0) throw new Error('Please enter a valid leverage.');
+        positionSize = margin * leverage;
+        quantity = positionSize / entryPrice;
+      } else if(state.input === 'positionSize'){
+        positionSize = num(els.positionSizeInput.value);
+        if(positionSize <= 0) throw new Error('Please enter a valid position size.');
+        quantity = positionSize / entryPrice;
+      }
+
+      const openValue = entryPrice * quantity;
+      return {
+        marketType: state.market,
+        tradeSide: state.side,
+        quoteCurrency,
+        entryPrice,
+        quantity,
+        positionSize,
+        openValue,
+        margin,
+        leverage,
+        entryFeeMode: els.entryFeeMode.value,
+        entryFeeValue: num(els.entryFeeValue.value),
+        exitFeeMode: els.exitFeeMode.value,
+        exitFeeValue: num(els.exitFeeValue.value),
+        fundingCost: state.market === 'futures' ? num(els.fundingCost.value) : 0,
+        additionalCosts: num(els.additionalCosts.value)
+      };
+    }
+
+    function solveExit(base, targetNetProfit){
+      const entryFee = calcFee(base.entryFeeMode, base.entryFeeValue, base.openValue);
+      const K = targetNetProfit + entryFee + base.fundingCost + base.additionalCosts;
+      const q = base.quantity;
+      const e = base.entryPrice;
+      if(q <= 0) throw new Error('Invalid quantity.');
+
+      if(base.exitFeeMode === 'fixed'){
+        if(base.tradeSide === 'spotBuySell' || base.tradeSide === 'long'){
+          return (K + base.exitFeeValue + q * e) / q;
+        } else {
+          return (q * e - K - base.exitFeeValue) / q;
+        }
+      } else {
+        const r = base.exitFeeValue / 100;
+        if(base.tradeSide === 'spotBuySell' || base.tradeSide === 'long'){
+          const denom = q * (1 - r);
+          if(denom <= 0) throw new Error('Invalid close fee percent.');
+          return (K + q * e) / denom;
+        } else {
+          const denom = q * (1 + r);
+          if(denom <= 0) throw new Error('Invalid close fee percent.');
+          return (q * e - K) / denom;
+        }
+      }
+    }
+
+    function compute(base, exitPrice){
+      if(exitPrice <= 0) throw new Error('Please enter a valid exit price.');
+      const closeValue = exitPrice * base.quantity;
+      const grossProfit = (base.tradeSide === 'spotBuySell' || base.tradeSide === 'long')
+        ? (exitPrice - base.entryPrice) * base.quantity
+        : (base.entryPrice - exitPrice) * base.quantity;
+
+      const entryFee = calcFee(base.entryFeeMode, base.entryFeeValue, base.openValue);
+      const exitFee = calcFee(base.exitFeeMode, base.exitFeeValue, closeValue);
+      const totalCosts = entryFee + exitFee + base.fundingCost + base.additionalCosts;
+      const netProfit = grossProfit - totalCosts;
+      const roiOnPosition = base.openValue > 0 ? (netProfit / base.openValue) * 100 : 0;
+      const roiOnMargin = base.margin > 0 ? (netProfit / base.margin) * 100 : null;
+      const breakEvenPrice = solveExit(base, 0);
+
+      return {
+        ...base,
+        exitPrice,
+        closeValue,
+        grossProfit,
+        entryFee,
+        exitFee,
+        totalCosts,
+        netProfit,
+        roiOnPosition,
+        roiOnMargin,
+        breakEvenPrice
+      };
+    }
+
+    function getMainResult(){
+      const base = getBase();
+      if(state.mode === 'exitPrice'){
+        return compute(base, num(els.exitPrice.value));
+      }
+      if(state.mode === 'targetPercent'){
+        const targetPercent = num(els.targetPercent.value);
+        const netTarget = base.openValue * (targetPercent / 100);
+        return compute(base, solveExit(base, netTarget));
+      }
+      if(state.mode === 'targetAmount'){
+        return compute(base, solveExit(base, num(els.targetAmount.value)));
+      }
+      return null;
+    }
+
+    function getMultiResults(){
+      if(state.mode !== 'multiTargets') return [];
+      const base = getBase();
+      const list = (els.multiList.value || '').trim();
+      if(!list) return [];
+      const values = list.split(',').map(v => parseFloat(v.trim())).filter(Number.isFinite);
+
+      return values.map(v => {
+        let exit;
+        if(els.multiType.value === 'price'){
+          exit = v;
+        } else if(els.multiType.value === 'amount'){
+          exit = solveExit(base, v);
+        } else {
+          exit = solveExit(base, base.openValue * (v / 100));
+        }
+        return { targetType: els.multiType.value, targetValue: v, ...compute(base, exit) };
+      });
+    }
+
+    function getPartialResults(){
+      if(!els.enablePartialExit.checked) return {disabled:true};
+
+      const rows = [];
+      partialPortions().forEach((p, i) => {
+        const portion = num(p.value);
+        const type = partialTypes()[i].value;
+        const value = num(partialValues()[i].value);
+        if(portion > 0 && value > 0) rows.push({portion, type, value});
+      });
+
+      if(!rows.length) return {error:'Partial Exit is enabled but no valid rows were entered.'};
+
+      const totalPortion = rows.reduce((s,r)=>s+r.portion,0);
+      if(Math.abs(totalPortion - 100) > 0.0001){
+        return {error:'Partial exit portions must total exactly 100%.'};
+      }
+
+      const base = getBase();
+      let totalNet = 0, totalCosts = 0, totalGross = 0, weightedExit = 0, totalQty = 0;
+
+      const outRows = rows.map(r => {
+        const partQty = base.quantity * (r.portion / 100);
+        const partBase = {
+          ...base,
+          quantity: partQty,
+          positionSize: partQty * base.entryPrice,
+          openValue: partQty * base.entryPrice,
+          margin: base.margin ? base.margin * (r.portion / 100) : 0
+        };
+
+        let exit;
+        if(r.type === 'price'){
+          exit = r.value;
+        } else if(r.type === 'amount'){
+          exit = solveExit(partBase, r.value);
+        } else {
+          exit = solveExit(partBase, partBase.openValue * (r.value / 100));
+        }
+
+        const res = compute(partBase, exit);
+        totalNet += res.netProfit;
+        totalCosts += res.totalCosts;
+        totalGross += res.grossProfit;
+        weightedExit += res.exitPrice * partQty;
+        totalQty += partQty;
+
+        return {portion:r.portion, targetType:r.type, targetValue:r.value, ...res};
+      });
+
+      return {
+        rows: outRows,
+        summary: {
+          totalNet,
+          totalCosts,
+          totalGross,
+          weightedExitPrice: totalQty > 0 ? weightedExit / totalQty : 0,
+          roiOnPosition: base.openValue > 0 ? (totalNet / base.openValue) * 100 : 0,
+          roiOnMargin: base.margin > 0 ? (totalNet / base.margin) * 100 : null
+        }
+      };
+    }
+
+    function renderSummary(result){
+      const sideLabel = result.tradeSide === 'spotBuySell' ? 'Buy → Sell' : result.tradeSide;
+      const items = [
+        ['Market / Side', `${result.marketType} / ${sideLabel}`, 'neutral'],
+        ['Position Size', `${fmt(result.positionSize,6)} ${result.quoteCurrency}`, 'neutral'],
+        ['Gross Profit', `${fmt(result.grossProfit,6)} ${result.quoteCurrency}`, result.grossProfit > 0 ? 'positive' : result.grossProfit < 0 ? 'negative' : 'neutral'],
+        ['Total Costs', `${fmt(result.totalCosts,6)} ${result.quoteCurrency}`, 'warning'],
+        ['Net Profit', `${fmt(result.netProfit,6)} ${result.quoteCurrency}`, result.netProfit > 0 ? 'positive' : result.netProfit < 0 ? 'negative' : 'neutral'],
+        ['Break-even Exit', fmt(result.breakEvenPrice,8), 'neutral'],
+        ['ROI on Position', `${fmt(result.roiOnPosition,6)}%`, result.roiOnPosition > 0 ? 'positive' : result.roiOnPosition < 0 ? 'negative' : 'neutral']
+      ];
+
+      if(result.marketType === 'futures' && result.roiOnMargin !== null){
+        items.push(['ROI on Margin', `${fmt(result.roiOnMargin,6)}%`, result.roiOnMargin > 0 ? 'positive' : result.roiOnMargin < 0 ? 'negative' : 'neutral']);
+      }
+
+      els.summaryGrid.innerHTML = items.map(([k,v,cls]) => `
+        <div class="stat">
+          <div class="k">${k}</div>
+          <div class="v ${cls}">${v}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderDetails(result){
+      const rows = [
+        ['Market Type', result.marketType],
+        ['Trade Side', result.tradeSide === 'spotBuySell' ? 'Buy → Sell' : result.tradeSide],
+        ['Entry Price', fmt(result.entryPrice,8)],
+        ['Exit Price', fmt(result.exitPrice,8)],
+        ['Quantity', fmt(result.quantity,8)],
+        ['Open Value', `${fmt(result.openValue,8)} ${result.quoteCurrency}`],
+        ['Close Value', `${fmt(result.closeValue,8)} ${result.quoteCurrency}`],
+        ['Position Size', `${fmt(result.positionSize,8)} ${result.quoteCurrency}`],
+        ['Margin', result.margin ? `${fmt(result.margin,8)} ${result.quoteCurrency}` : '-'],
+        ['Leverage', result.leverage ? fmt(result.leverage,4) : '-'],
+        ['Gross Profit', `${fmt(result.grossProfit,8)} ${result.quoteCurrency}`],
+        ['Entry / Buy / Open Fee', `${fmt(result.entryFee,8)} ${result.quoteCurrency}`],
+        ['Exit / Sell / Close Fee', `${fmt(result.exitFee,8)} ${result.quoteCurrency}`],
+        ['Funding Cost', `${fmt(result.fundingCost,8)} ${result.quoteCurrency}`],
+        ['Additional Costs', `${fmt(result.additionalCosts,8)} ${result.quoteCurrency}`],
+        ['Total Costs', `${fmt(result.totalCosts,8)} ${result.quoteCurrency}`],
+        ['Net Profit', `${fmt(result.netProfit,8)} ${result.quoteCurrency}`],
+        ['Break-even Exit Price', fmt(result.breakEvenPrice,8)],
+        ['ROI on Position', `${fmt(result.roiOnPosition,8)}%`]
+      ];
+      if(result.marketType === 'futures'){
+        rows.push(['ROI on Margin', result.roiOnMargin !== null ? `${fmt(result.roiOnMargin,8)}%` : '-']);
+      }
+
+      els.detailsWrap.innerHTML = `
+        <table>
+          <thead><tr><th>Item</th><th>Value</th></tr></thead>
+          <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody>
+        </table>
+      `;
+    }
+
+    function renderMulti(rows){
+      if(!rows.length){
+        els.multiWrap.innerHTML = '<div class="mini-note">No multi-target results yet.</div>';
+        return;
+      }
+      els.multiWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Target Type</th>
+              <th>Target Value</th>
+              <th>Calculated Exit Price</th>
+              <th>Gross Profit</th>
+              <th>Total Costs</th>
+              <th>Net Profit</th>
+              <th>ROI on Position</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${r.targetType}</td>
+                <td>${fmt(r.targetValue,8)}</td>
+                <td>${fmt(r.exitPrice,8)}</td>
+                <td>${fmt(r.grossProfit,8)} ${r.quoteCurrency}</td>
+                <td>${fmt(r.totalCosts,8)} ${r.quoteCurrency}</td>
+                <td>${fmt(r.netProfit,8)} ${r.quoteCurrency}</td>
+                <td>${fmt(r.roiOnPosition,8)}%</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderPartial(data, quote){
+      if(data.disabled){
+        els.partialWrap.innerHTML = '<div class="mini-note">Partial exit is disabled.</div>';
+        return;
+      }
+      if(data.error){
+        els.partialWrap.innerHTML = `<div class="message error">${data.error}</div>`;
+        return;
+      }
+      els.partialWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Exit Portion %</th>
+              <th>Target Type</th>
+              <th>Target Value</th>
+              <th>Exit Price</th>
+              <th>Gross Profit</th>
+              <th>Total Costs</th>
+              <th>Net Profit</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.rows.map(r => `
+              <tr>
+                <td>${fmt(r.portion,4)}%</td>
+                <td>${r.targetType}</td>
+                <td>${fmt(r.targetValue,8)}</td>
+                <td>${fmt(r.exitPrice,8)}</td>
+                <td>${fmt(r.grossProfit,8)} ${quote}</td>
+                <td>${fmt(r.totalCosts,8)} ${quote}</td>
+                <td>${fmt(r.netProfit,8)} ${quote}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="mini-note">
+          Total Net Profit: <strong>${fmt(data.summary.totalNet,8)} ${quote}</strong><br>
+          Total Costs: <strong>${fmt(data.summary.totalCosts,8)} ${quote}</strong><br>
+          Weighted Average Exit Price: <strong>${fmt(data.summary.weightedExitPrice,8)}</strong><br>
+          ROI on Position: <strong>${fmt(data.summary.roiOnPosition,8)}%</strong>
+          ${data.summary.roiOnMargin !== null ? `<br>ROI on Margin: <strong>${fmt(data.summary.roiOnMargin,8)}%</strong>` : ''}
+        </div>
+      `;
+    }
+
+    function saveState(){
+      const saved = {
+        state,
+        fields: {}
+      };
+      document.querySelectorAll('input, select').forEach(el => {
+        if(el.type === 'checkbox') saved.fields[el.id] = el.checked;
+        else saved.fields[el.id] = el.value;
+      });
+      saved.partialPortions = partialPortions().map(x => x.value);
+      saved.partialTypes = partialTypes().map(x => x.value);
+      saved.partialValues = partialValues().map(x => x.value);
+      localStorage.setItem('tradeProfitCalculatorRedesign', JSON.stringify(saved));
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem('tradeProfitCalculatorRedesign');
+      if(!raw) return;
+      try{
+        const saved = JSON.parse(raw);
+        if(saved.state){
+          state.market = saved.state.market || state.market;
+          state.side = saved.state.side || state.side;
+          state.input = saved.state.input || state.input;
+          state.mode = saved.state.mode || state.mode;
+        }
+        if(saved.fields){
+          document.querySelectorAll('input, select').forEach(el => {
+            if(saved.fields.hasOwnProperty(el.id)){
+              if(el.type === 'checkbox') el.checked = saved.fields[el.id];
+              else el.value = saved.fields[el.id];
+            }
+          });
+        }
+        partialPortions().forEach((el,i)=>{ if(saved.partialPortions?.[i] !== undefined) el.value = saved.partialPortions[i]; });
+        partialTypes().forEach((el,i)=>{ if(saved.partialTypes?.[i] !== undefined) el.value = saved.partialTypes[i]; });
+        partialValues().forEach((el,i)=>{ if(saved.partialValues?.[i] !== undefined) el.value = saved.partialValues[i]; });
+      }catch(e){}
+    }
+
+    function resetAll(){
+      localStorage.removeItem('tradeProfitCalculatorRedesign');
+      window.location.reload();
+    }
+
+    function copyResult(){
+      const text = els.detailsWrap.innerText.trim();
+      if(!text || text === 'No detailed calculation yet.'){
+        setMessage('Please calculate first.', 'error');
+        return;
+      }
+      const data = `Trade Profit Calculator\n\n${text}`;
+      navigator.clipboard.writeText(data).then(()=>{
+        setMessage('Result copied successfully.', 'success');
+      }).catch(()=>{
+        setMessage('Copy failed.', 'error');
+      });
+    }
+
+    function calculate(){
+      try{
+        setMessage('');
+        if(state.mode === 'multiTargets'){
+          const multi = getMultiResults();
+          if(!multi.length) throw new Error('Please enter valid multi targets.');
+          renderSummary(multi[0]);
+          renderDetails(multi[0]);
+          renderMulti(multi);
+        } else {
+          const result = getMainResult();
+          if(!result) throw new Error('Calculation failed.');
+          renderSummary(result);
+          renderDetails(result);
+          els.multiWrap.innerHTML = '<div class="mini-note">Multi Targets are not active in this mode.</div>';
+        }
+        renderPartial(getPartialResults(), (els.quoteCurrency.value || 'USDT').trim());
+        saveState();
+      } catch(err){
+        setMessage(err.message || 'Calculation error.', 'error');
+      }
+    }
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-key]');
+      if(!btn) return;
+      const key = btn.dataset.key;
+      const value = btn.dataset.value;
+      state[key] = value;
+      updateVisibility();
+    });
+
+    els.feePreset.addEventListener('change', applyPreset);
+    els.enablePartialExit.addEventListener('change', updateVisibility);
+    els.calculateBtn.addEventListener('click', calculate);
+    els.copyBtn.addEventListener('click', copyResult);
+    els.resetBtn.addEventListener('click', resetAll);
+    const copyWalletBtn = document.getElementById('copyWalletBtn');
+    if (copyWalletBtn) {
+      copyWalletBtn.addEventListener('click', () => {
+        const wallet = document.getElementById('walletAddress')?.innerText?.trim() || '';
+        if (!wallet) return;
+        navigator.clipboard.writeText(wallet).then(() => {
+          setMessage('Wallet address copied successfully.', 'success');
+        }).catch(() => {
+          setMessage('Could not copy wallet address.', 'error');
+        });
+      });
+    }
+
+    loadState();
+    updateVisibility();
+  </script>
+</body>
+</html>
